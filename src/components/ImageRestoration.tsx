@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
-  Loader2, RefreshCw, Sparkles, FileType2, ImagePlus, Upload, CheckCircle2, Download
+  Loader2, RefreshCw, Sparkles, FileType, ImagePlus, Upload, CheckCircle2, Download
 } from 'lucide-react';
 import { ai, MODELS } from '../services/geminiService';
 
@@ -86,7 +86,7 @@ const ImageRestoration = () => {
       <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-12 bg-white/70 backdrop-blur-md p-6 rounded-[40px] border border-white shadow-xl">
          <div className="flex items-center gap-4">
             <div className={`p-4 rounded-3xl text-white shadow-lg ${mode === 'text' ? 'bg-indigo-600' : 'bg-rose-600'}`}>
-               {mode === 'text' ? <FileType2 size={24} /> : <ImagePlus size={24} />}
+               {mode === 'text' ? <FileType size={24} /> : <ImagePlus size={24} />}
             </div>
             <div>
                <h2 className="text-xl font-black text-slate-900 uppercase tracking-tighter">AI Restoration</h2>
@@ -95,7 +95,7 @@ const ImageRestoration = () => {
          </div>
          <div className="bg-slate-100 p-1.5 rounded-2xl flex items-center gap-1 border border-slate-200">
             <button onClick={() => { setMode('text'); setRestored(null); }} className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase flex items-center gap-2 transition-all ${mode === 'text' ? 'bg-white text-indigo-600 shadow-md' : 'text-slate-400 hover:text-slate-600'}`}>
-               <FileType2 size={14}/> Text / Doc (AI Color)
+               <FileType size={14}/> Text / Doc (AI Color)
             </button>
             <button onClick={() => { setMode('photo'); setRestored(null); }} className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase flex items-center gap-2 transition-all ${mode === 'photo' ? 'bg-white text-rose-600 shadow-md' : 'text-slate-400 hover:text-slate-600'}`}>
                <ImagePlus size={14}/> Photo / Image (AI)
