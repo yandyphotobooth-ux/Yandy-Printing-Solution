@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
-  Crop, Upload, RefreshCw, DownloadCloud, Loader2, Trash2, CheckCircle2, Download, ImagePlus, FileType2
+  Crop, Upload, RefreshCw, DownloadCloud, Loader2, Trash2, CheckCircle2, Download, ImagePlus, FileType
 } from 'lucide-react';
 import { PHOTO_PRINT_SIZES_RESIZER } from '../constants';
 import { injectDpiIntoJpeg } from '../utils';
@@ -128,7 +128,7 @@ const PhotoResizer = () => {
                  {photo.status === 'done' && <div className="absolute top-3 left-3 p-1.5 bg-green-500 text-white rounded-full shadow-md"><CheckCircle2 size={12}/></div>}
               </div>
               <div className="p-5 space-y-4 bg-white flex-1 flex flex-col justify-between">
-                 <div className="space-y-3"><div className="flex items-center gap-2"><FileType2 size={14} className="text-slate-400" /><select className="w-full bg-slate-50 border border-slate-100 rounded-xl px-3 py-2 text-[10px] font-black uppercase text-slate-700 outline-none focus:border-emerald-400" value={photo.targetSizeId} onChange={(e) => setPhotos(prev => prev.map(p => p.id === photo.id ? { ...p, targetSizeId: e.target.value, resultSrc: null, status: 'pending' } : p))}>{PHOTO_PRINT_SIZES_RESIZER.map(s => (<option key={s.id} value={s.id}>{s.label.split(' (')[0]} ({photo.isLandscape ? `${s.height}x${s.width}"` : `${s.width}x${s.height}"`})</option>))}</select></div></div>
+                 <div className="space-y-3"><div className="flex items-center gap-2"><FileType size={14} className="text-slate-400" /><select className="w-full bg-slate-50 border border-slate-100 rounded-xl px-3 py-2 text-[10px] font-black uppercase text-slate-700 outline-none focus:border-emerald-400" value={photo.targetSizeId} onChange={(e) => setPhotos(prev => prev.map(p => p.id === photo.id ? { ...p, targetSizeId: e.target.value, resultSrc: null, status: 'pending' } : p))}>{PHOTO_PRINT_SIZES_RESIZER.map(s => (<option key={s.id} value={s.id}>{s.label.split(' (')[0]} ({photo.isLandscape ? `${s.height}x${s.width}"` : `${s.width}x${s.height}"`})</option>))}</select></div></div>
                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-50"><button onClick={() => processSingle(photo.id)} disabled={photo.status === 'processing'} className="py-2.5 bg-emerald-50 text-emerald-600 rounded-xl text-[10px] font-black uppercase flex items-center justify-center gap-1.5">{photo.status === 'processing' ? <Loader2 className="animate-spin" size={12}/> : <RefreshCw size={12}/>}{photo.status === 'done' ? 'Redo' : 'Process'}</button><button onClick={() => { if (!photo.resultSrc) return; const link = document.createElement('a'); const sDef = PHOTO_PRINT_SIZES_RESIZER.find(s => s.id === photo.targetSizeId); if (!sDef) return; link.download = `Print_${sDef.label}_${photo.file.name}`; link.href = photo.resultSrc; link.click(); }} disabled={photo.status !== 'done'} className="py-2.5 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase hover:bg-slate-800 transition-all flex items-center justify-center gap-1.5 disabled:opacity-30 shadow-sm"><Download size={12}/> Save</button></div>
               </div>
             </div>
