@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import { 
-  Layout, FileSpreadsheet, Undo2, Crop, Sparkles, Maximize
+  Layout, FileSpreadsheet, Undo2, Crop, Sparkles
 } from 'lucide-react';
 import IDGenerator from './components/IDGenerator';
 import ResumeBuilder from './components/ResumeBuilder';
 import ImageRestoration from './components/ImageRestoration';
 import PhotoResizer from './components/PhotoResizer';
-import WhiteBackgroundTool from './components/WhiteBackgroundTool';
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('id-gen');
@@ -15,7 +14,6 @@ const App = () => {
     { id: 'resume', label: 'RESUME TYPING', icon: FileSpreadsheet, color: 'text-indigo-600' },
     { id: 'restore', label: 'Image/Text Restoration', icon: Undo2, color: 'text-rose-600' },
     { id: 'resizer', label: 'Photo Resizer', icon: Crop, color: 'text-emerald-600' },
-    { id: 'white-bg', label: 'White Background', icon: Maximize, color: 'text-slate-900' },
   ];
 
   return (
@@ -58,7 +56,6 @@ const App = () => {
           {activeTab === 'resume' && <ResumeBuilder />}
           {activeTab === 'restore' && <ImageRestoration />}
           {activeTab === 'resizer' && <PhotoResizer />}
-          {activeTab === 'white-bg' && <WhiteBackgroundTool />}
         </main>
         <footer className="mt-32 py-16 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-8 text-slate-400">
           <div className="flex items-center gap-4">
