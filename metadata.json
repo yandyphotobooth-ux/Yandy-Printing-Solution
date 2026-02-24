@@ -1,7 +1,5 @@
 {
   "name": "Yandy Printing Shop",
   "description": "A professional digital printing toolkit featuring RUSH ID generation, Resume building, AI Image restoration, and Batch photo resizing.",
-  "requestFramePermissions": [
-    "camera"
-  ]
+  "requestFramePermissions": []
 }
