@@ -2,8 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { 
   FileText, Loader2, Sparkles, Mail, Phone, UserRound, BrainCircuit, Image as ImageIcon, DownloadCloud, Edit3, Eye, Type, FileType
 } from 'lucide-react';
-import html2pdf from 'html2pdf.js';
-import { ai, MODELS } from '../services/geminiService';
+import html2pdf from 'html2pdf.js/dist/html2pdf.bundle.min.js';
+import { getAi, MODELS } from '../services/geminiService';
 import { 
   CV_TEMPLATES, PAPER_SIZES, FONT_OPTIONS, OBJECTIVE_TRAITS 
 } from '../constants';
@@ -103,6 +103,7 @@ const ResumeBuilder = () => {
     const traitsStr = selectedTraits.length > 0 ? selectedTraits.join(' and ').toLowerCase() : 'hardworking and reliable';
     const prompt = `Write a short, professional resume objective for a candidate named ${data.name || 'a professional'}. Emphasize traits: ${traitsStr}. Short, straightforward, loyal. No quotes.`;
     try {
+      const ai = getAi();
       const response = await ai.models.generateContent({
         model: MODELS.TEXT,
         contents: prompt

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { 
   Loader2, RefreshCw, Sparkles, FileType, ImagePlus, Upload, CheckCircle2, Download
 } from 'lucide-react';
-import { ai, MODELS } from '../services/geminiService';
+import { getAi, MODELS } from '../services/geminiService';
 import { resizeImage } from '../utils';
 
 const ImageRestoration = () => {
@@ -65,6 +65,7 @@ const ImageRestoration = () => {
       const resizedImage = await resizeImage(image);
       const optimizedBase64 = resizedImage.split(',')[1];
 
+      const ai = getAi();
       const response = await ai.models.generateContent({
         model: MODELS.IMAGE,
         contents: {

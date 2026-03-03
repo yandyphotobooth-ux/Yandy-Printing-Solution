@@ -4,7 +4,7 @@ import {
   Loader2, Pipette, CheckCircle2, Columns, DownloadCloud, FileImage, FileType, Minus, Plus
 } from 'lucide-react';
 import { jsPDF } from 'jspdf';
-import { ai, MODELS } from '../services/geminiService';
+import { getAi, MODELS } from '../services/geminiService';
 import { 
   VARIATIONS, PHOTO_SIZES, BACKGROUND_COLORS, SUIT_COLORS, CASUAL_COLORS, GENDERS, TRAY_TABS, PRINT_PACKAGE_SIZES 
 } from '../constants';
@@ -105,6 +105,7 @@ const IDGenerator = () => {
       5. QUALITY: High resolution, sharp details, no artifacts.
     `;
     
+    const ai = getAi();
     const response = await ai.models.generateContent({
         model: MODELS.IMAGE,
         contents: {
