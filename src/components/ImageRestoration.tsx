@@ -10,6 +10,7 @@ const ImageRestoration = () => {
   const [restored, setRestored] = useState<string | null>(null);
   const [mode, setMode] = useState<'text' | 'photo'>('text'); 
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -61,6 +62,7 @@ const ImageRestoration = () => {
     const prompt = mode === 'text' ? textPrompt : photoPrompt;
 
     try {
+      setError(null);
       // Resize image to prevent 500 errors from large payloads
       const resizedImage = await resizeImage(image);
       const optimizedBase64 = resizedImage.split(',')[1];
@@ -80,15 +82,34 @@ const ImageRestoration = () => {
       if (generatedBase64) {
         setRestored(`data:image/png;base64,${generatedBase64}`);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Restoration Error:", err);
-      alert("AI Restoration failed. Please try again.");
+      if (err.message?.includes('429') || err.message?.includes('quota') || err.message?.includes('RESOURCE_EXHAUSTED')) {
+        setError("API Quota Exceeded. Please wait 1-2 minutes or check your Google AI Studio billing/plan.");
+      } else {
+        setError("AI Restoration failed. Please try again.");
+      }
     }
     setLoading(false);
   };
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 max-w-6xl mx-auto">
+      {error && (
+        <div className="mb-8 bg-rose-50 border border-rose-200 p-6 rounded-[32px] flex flex-col md:flex-row items-center gap-6 animate-in fade-in slide-in-from-top-4 shadow-xl shadow-rose-100/50">
+          <div className="w-16 h-16 bg-rose-500 rounded-[24px] flex items-center justify-center text-white shadow-lg rotate-3">
+            <RefreshCw size={32} className="animate-spin-slow" />
+          </div>
+          <div className="flex-1 text-center md:text-left">
+            <h3 className="text-lg font-black text-rose-600 uppercase tracking-tighter italic">Quota Limit Reached</h3>
+            <p className="text-xs font-bold text-rose-400 uppercase tracking-widest mt-1">{error}</p>
+          </div>
+          <div className="flex gap-3">
+            <a href="https://aistudio.google.com/app/plan_and_billing" target="_blank" rel="noreferrer" className="px-8 py-4 bg-white border border-rose-200 rounded-2xl text-[11px] font-black text-rose-600 uppercase tracking-widest hover:bg-rose-50 transition-all shadow-sm">Check Billing</a>
+            <button onClick={() => setError(null)} className="px-8 py-4 bg-rose-600 rounded-2xl text-[11px] font-black text-white uppercase tracking-widest hover:bg-rose-500 transition-all shadow-lg shadow-rose-200">Dismiss</button>
+          </div>
+        </div>
+      )}
       <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-12 bg-white/70 backdrop-blur-md p-6 rounded-[40px] border border-white shadow-xl">
          <div className="flex items-center gap-4">
             <div className={`p-4 rounded-3xl text-white shadow-lg ${mode === 'text' ? 'bg-indigo-600' : 'bg-rose-600'}`}>

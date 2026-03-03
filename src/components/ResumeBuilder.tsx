@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
-  FileText, Loader2, Sparkles, Mail, Phone, UserRound, BrainCircuit, Image as ImageIcon, DownloadCloud, Edit3, Eye, Type, FileType
+  FileText, Loader2, Sparkles, Mail, Phone, UserRound, BrainCircuit, Image as ImageIcon, DownloadCloud, Edit3, Eye, Type, FileType, RefreshCw
 } from 'lucide-react';
 import html2pdf from 'html2pdf.js/dist/html2pdf.bundle.min.js';
 import { getAi, MODELS } from '../services/geminiService';
@@ -14,6 +14,7 @@ const ResumeBuilder = () => {
   const [selectedFont, setSelectedFont] = useState('font-sans');
   const [customColor, setCustomColor] = useState('#1e293b');
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [resumeError, setResumeError] = useState<string | null>(null);
   const [selectedTraits, setSelectedTraits] = useState<string[]>([]);
   const [resumePhoto, setResumePhoto] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'edit' | 'preview'>('edit'); 
@@ -103,6 +104,7 @@ const ResumeBuilder = () => {
     const traitsStr = selectedTraits.length > 0 ? selectedTraits.join(' and ').toLowerCase() : 'hardworking and reliable';
     const prompt = `Write a short, professional resume objective for a candidate named ${data.name || 'a professional'}. Emphasize traits: ${traitsStr}. Short, straightforward, loyal. No quotes.`;
     try {
+      setResumeError(null);
       const ai = getAi();
       const response = await ai.models.generateContent({
         model: MODELS.TEXT,
@@ -112,8 +114,13 @@ const ResumeBuilder = () => {
       if (text) { 
         setData(prev => ({ ...prev, objective: text.trim().toUpperCase() })); 
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("AI Error:", err);
+      if (err.message?.includes('429') || err.message?.includes('quota') || err.message?.includes('RESOURCE_EXHAUSTED')) {
+        setResumeError("AI Quota Exceeded. Please wait 1-2 minutes.");
+      } else {
+        setResumeError("AI generation failed.");
+      }
     }
     setIsAiLoading(false);
   };
@@ -194,6 +201,15 @@ const ResumeBuilder = () => {
 
   return (
     <div className="bg-white rounded-[48px] p-8 md:p-12 border border-slate-100 shadow-2xl animate-in fade-in zoom-in-95 duration-700">
+      {resumeError && (
+        <div className="mb-6 bg-rose-50 border border-rose-200 p-4 rounded-2xl flex items-center justify-between gap-4 animate-in fade-in slide-in-from-top-2">
+          <div className="flex items-center gap-3">
+            <RefreshCw size={16} className="text-rose-500 animate-spin-slow" />
+            <p className="text-[10px] font-black text-rose-600 uppercase tracking-widest">{resumeError}</p>
+          </div>
+          <button onClick={() => setResumeError(null)} className="text-[9px] font-black text-rose-400 uppercase hover:text-rose-600">Dismiss</button>
+        </div>
+      )}
       <div className="flex flex-col lg:flex-row items-center justify-between gap-8 mb-10 border-b border-slate-100 pb-8">
         <div className="flex items-center gap-5"><div className="w-16 h-16 bg-blue-600 text-white rounded-3xl flex items-center justify-center shadow-xl shadow-blue-100"><FileText size={32} /></div><div><h2 className="text-3xl font-black text-slate-900 uppercase tracking-tighter italic leading-none">RESUME TYPING</h2></div></div>
         <div className="flex flex-wrap items-center gap-4 bg-slate-50 p-2 rounded-3xl border border-slate-200 shadow-sm">
