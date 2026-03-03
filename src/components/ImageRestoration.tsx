@@ -3,6 +3,7 @@ import {
   Loader2, RefreshCw, Sparkles, FileType, ImagePlus, Upload, CheckCircle2, Download
 } from 'lucide-react';
 import { ai, MODELS } from '../services/geminiService';
+import { resizeImage } from '../utils';
 
 const ImageRestoration = () => {
   const [image, setImage] = useState<string | null>(null);
@@ -60,12 +61,16 @@ const ImageRestoration = () => {
     const prompt = mode === 'text' ? textPrompt : photoPrompt;
 
     try {
+      // Resize image to prevent 500 errors from large payloads
+      const resizedImage = await resizeImage(image);
+      const optimizedBase64 = resizedImage.split(',')[1];
+
       const response = await ai.models.generateContent({
         model: MODELS.IMAGE,
         contents: {
           parts: [
             { text: prompt },
-            { inlineData: { mimeType: "image/png", data: image.split(',')[1] } }
+            { inlineData: { mimeType: "image/jpeg", data: optimizedBase64 } }
           ]
         }
       });

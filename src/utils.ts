@@ -63,6 +63,36 @@ export function injectDpiIntoJpeg(base64Image: string, dpi: number) {
   return 'data:' + mimeString + ';base64,' + btoa(binary);
 }
 
+export const resizeImage = (base64Str: string, maxWidth = 1024, maxHeight = 1024): Promise<string> => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      let width = img.width;
+      let height = img.height;
+
+      if (width > height) {
+        if (width > maxWidth) {
+          height *= maxWidth / width;
+          width = maxWidth;
+        }
+      } else {
+        if (height > maxHeight) {
+          width *= maxHeight / height;
+          height = maxHeight;
+        }
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(img, 0, 0, width, height);
+      resolve(canvas.toDataURL('image/jpeg', 0.8));
+    };
+    img.src = base64Str;
+  });
+};
+
 export const processCanvasImage = (ctx: CanvasRenderingContext2D, img: HTMLImageElement, type: string, width: number, height: number, nameForPlate = "") => {
   const imgAspect = img.width / img.height;
   const targetAspect = width / height;

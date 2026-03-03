@@ -8,7 +8,7 @@ import { ai, MODELS } from '../services/geminiService';
 import { 
   VARIATIONS, PHOTO_SIZES, BACKGROUND_COLORS, SUIT_COLORS, CASUAL_COLORS, GENDERS, TRAY_TABS, PRINT_PACKAGE_SIZES 
 } from '../constants';
-import { Packer, injectDpiIntoJpeg, processCanvasImage } from '../utils';
+import { Packer, injectDpiIntoJpeg, processCanvasImage, resizeImage } from '../utils';
 
 const IDGenerator = () => {
   const [originalImage, setOriginalImage] = useState<string | null>(null);
@@ -89,7 +89,13 @@ const IDGenerator = () => {
 
   const callGeminiImageToImage = async (base64Data: string, prompt: string, variationKey: string) => {
     setLoading(prev => ({ ...prev, [variationKey]: true }));
-    const finalPrompt = `
+    
+    try {
+      // Resize image to prevent 500 errors from large payloads
+      const resizedImage = await resizeImage(`data:image/png;base64,${base64Data}`);
+      const optimizedBase64 = resizedImage.split(',')[1];
+
+      const finalPrompt = `
       TASK: Generate a high-quality professional ID photo.
       STRICT REQUIREMENTS:
       1. BACKGROUND: MUST BE ${selectedBg.value}. Completely remove any original background.
@@ -99,13 +105,12 @@ const IDGenerator = () => {
       5. QUALITY: High resolution, sharp details, no artifacts.
     `;
     
-    try {
-      const response = await ai.models.generateContent({
+    const response = await ai.models.generateContent({
         model: MODELS.IMAGE,
         contents: {
           parts: [
             { text: finalPrompt },
-            { inlineData: { mimeType: "image/png", data: base64Data } }
+            { inlineData: { mimeType: "image/jpeg", data: optimizedBase64 } }
           ]
         },
         config: {
